@@ -100,6 +100,22 @@ select tests.ok((select jsonb_array_length(v->'stores') from r where k = 'do') =
                 'owner dashboard covers both stores (5500 + 3000)');
 reset role;
 
+-- Same item sold in two stores is one row in the all-stores top list.
+select tests.login(:'owner');
+select public.save_product(tests.store('متجر ب'), 'شاي', 2000, 1200, 5, '9999');
+reset role;
+select tests.login(:'cashier_b');
+select public.complete_sale(tests.store('متجر ب'),
+  jsonb_build_array(jsonb_build_object('product_id', tests.product('متجر ب', 'شاي'), 'qty', 1)), 'card');
+reset role;
+select tests.login(:'owner');
+select tests.ok((select count(*) from jsonb_array_elements(public.dashboard_stats(current_date, current_date)->'top_products') t
+                 where t->>'name' = 'شاي') = 1
+                and (select (t->>'qty')::int from jsonb_array_elements(public.dashboard_stats(current_date, current_date)->'top_products') t
+                     where t->>'name' = 'شاي') = 3,
+                'top products merge the same item across stores (tea: 2 + 1)');
+reset role;
+
 select tests.login(:'cashier_a');
 select tests.throws($$ select public.dashboard_stats(current_date, current_date) $$,
                     'cashier cannot see the dashboard', 'not_authorized');

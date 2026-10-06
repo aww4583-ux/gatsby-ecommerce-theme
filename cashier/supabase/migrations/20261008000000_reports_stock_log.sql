@@ -344,10 +344,12 @@ begin
       (select coalesce(sum(amount), 0) from exp x where x.day = dd.day) as expenses
     from days dd
   ),
+  -- Grouped by name: each store has its own product row for the same item,
+  -- and the all-stores view should show it once.
   top as (
-    select product_id, min(name) as name, sum(qty) as qty, sum(line_total) as revenue,
-           sum(line_total) - sum(cost) as profit
-    from lines group by product_id
+    select min(product_id::text)::uuid as product_id, name, sum(qty) as qty,
+           sum(line_total) as revenue, sum(line_total) - sum(cost) as profit
+    from lines group by name
     order by sum(line_total) desc limit 10
   )
   select jsonb_build_object(
