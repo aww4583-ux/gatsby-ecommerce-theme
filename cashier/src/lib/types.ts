@@ -75,3 +75,33 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   manager: "مدير",
   cashier: "كاشير",
 };
+
+export type ProductWithCost = Product & { product_costs: { cost_price: number } | null };
+
+export type Expense = {
+  id: string;
+  store_id: string;
+  category: string;
+  amount: number;
+  note: string | null;
+  date: string;
+  created_at: string;
+  store: { name: string } | null;
+  creator: { full_name: string } | null;
+};
+
+export type ShiftRow = Shift & {
+  closed_by: string | null;
+  cashier: { full_name: string } | null;
+  store: { name: string } | null;
+};
+
+export type StaffMember = {
+  user_id: string;
+  email: string;
+  full_name: string;
+  role: AppRole;
+  is_active: boolean;
+  store_ids: string[];
+  created_at: string;
+};

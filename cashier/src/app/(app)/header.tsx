@@ -1,11 +1,20 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { selectStore, signOut } from "@/app/actions";
 import { ROLE_LABELS, type AppRole, type Store } from "@/lib/types";
 
 const ALL_STORES = "all";
+
+const NAV: { href: string; label: string; roles: AppRole[] }[] = [
+  { href: "/pos", label: "الكاشير", roles: ["owner", "manager", "cashier"] },
+  { href: "/shifts", label: "الورديات", roles: ["owner", "manager", "cashier"] },
+  { href: "/products", label: "المنتجات", roles: ["owner", "manager"] },
+  { href: "/expenses", label: "المصروفات", roles: ["owner", "manager"] },
+  { href: "/staff", label: "الموظفون", roles: ["owner"] },
+];
 
 export function Header({
   name,
@@ -21,6 +30,7 @@ export function Header({
   canSeeAllStores: boolean;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [pending, startTransition] = useTransition();
 
   function onChange(storeId: string) {
@@ -33,6 +43,24 @@ export function Header({
   return (
     <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-black/5 bg-white px-4 py-2 print:hidden">
       <span className="text-lg font-bold text-emerald-700">الكاشير</span>
+
+      <nav aria-label="الأقسام" className="flex flex-wrap gap-1">
+        {NAV.filter((n) => n.roles.includes(role)).map((n) => {
+          const active = pathname.startsWith(n.href);
+          return (
+            <Link
+              key={n.href}
+              href={n.href}
+              aria-current={active ? "page" : undefined}
+              className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
+                active ? "bg-emerald-50 text-emerald-800" : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {n.label}
+            </Link>
+          );
+        })}
+      </nav>
 
       {stores.length > 1 ? (
         <select

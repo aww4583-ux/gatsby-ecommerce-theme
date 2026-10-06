@@ -54,3 +54,22 @@ export async function requireSession(): Promise<AppSession> {
     canSeeAllStores,
   };
 }
+
+// Pages for owners/managers only. Cashiers are sent back to the till.
+export async function requireManager(): Promise<AppSession> {
+  const session = await requireSession();
+  if (session.profile.role === "cashier" || !session.profile.is_active) redirect("/pos");
+  return session;
+}
+
+export async function requireOwner(): Promise<AppSession> {
+  const session = await requireSession();
+  if (session.profile.role !== "owner" || !session.profile.is_active) redirect("/pos");
+  return session;
+}
+
+// Today and the first day of this month, in Baghdad time (YYYY-MM-DD).
+export function baghdadToday(): { today: string; monthStart: string } {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Baghdad" }).format(new Date());
+  return { today, monthStart: today.slice(0, 8) + "01" };
+}
