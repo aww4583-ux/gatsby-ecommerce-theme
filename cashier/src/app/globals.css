@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f6f8;
+  --foreground: #1a1d23;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Segoe UI", Tahoma, "Noto Sans Arabic", "Geeza Pro", system-ui, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Numbers and amounts line up in columns. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Receipt printing: a copy of the receipt is portalled to <body> and is
+   the only thing printed, sized for 80mm thermal paper. */
+.print-root {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  body > *:not(.print-root) {
+    display: none !important;
+  }
+
+  .print-root {
+    display: block;
+    width: 80mm;
+    padding: 3mm;
+    background: #fff;
+    color: #000;
+    font-size: 11px;
+  }
+}
