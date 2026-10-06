@@ -105,3 +105,49 @@ export type StaffMember = {
   store_ids: string[];
   created_at: string;
 };
+
+export type StoreStats = {
+  store_id: string;
+  name: string;
+  sales_count: number;
+  revenue: number;
+  discounts: number;
+  cash: number;
+  card: number;
+  cogs: number;
+  gross_profit: number;
+  expenses: number;
+  net_profit: number;
+  refunds_count: number;
+  refunds_total: number;
+};
+
+export type DashboardStats = {
+  stores: StoreStats[];
+  days: { day: string; revenue: number; net_profit: number }[];
+  top_products: { product_id: string; name: string; qty: number; revenue: number; profit: number }[];
+};
+
+export type SaleRow = {
+  id: string;
+  store_id: string;
+  invoice_no: number;
+  created_at: string;
+  total: number;
+  discount: number;
+  payment_method: PaymentMethod;
+  status: "completed" | "refunded";
+  refund_reason: string | null;
+  cashier: { full_name: string } | null;
+  store: { name: string } | null;
+};
+
+export type StockMovement = {
+  id: number;
+  change: number;
+  stock_after: number;
+  reason: "initial" | "sale" | "refund" | "adjustment";
+  created_at: string;
+  sale: { invoice_no: number } | null;
+  actor: { full_name: string } | null;
+};

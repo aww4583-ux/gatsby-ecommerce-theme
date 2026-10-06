@@ -9,11 +9,14 @@ import { ROLE_LABELS, type AppRole, type Store } from "@/lib/types";
 const ALL_STORES = "all";
 
 const NAV: { href: string; label: string; roles: AppRole[] }[] = [
+  { href: "/dashboard", label: "لوحة التحكم", roles: ["owner", "manager"] },
   { href: "/pos", label: "الكاشير", roles: ["owner", "manager", "cashier"] },
+  { href: "/sales", label: "المبيعات", roles: ["owner", "manager", "cashier"] },
   { href: "/shifts", label: "الورديات", roles: ["owner", "manager", "cashier"] },
   { href: "/products", label: "المنتجات", roles: ["owner", "manager"] },
   { href: "/expenses", label: "المصروفات", roles: ["owner", "manager"] },
   { href: "/staff", label: "الموظفون", roles: ["owner"] },
+  { href: "/stores", label: "المتاجر", roles: ["owner"] },
 ];
 
 export function Header({
@@ -79,6 +82,17 @@ export function Header({
         </select>
       ) : (
         <span className="rounded-lg bg-gray-100 px-2 py-1.5 font-medium">{stores[0]?.name}</span>
+      )}
+
+      {pending && (
+        // Block the page until it re-renders for the new store, so nothing
+        // (e.g. a new product) is saved against the previous store.
+        <div
+          role="status"
+          className="fixed inset-0 z-30 flex items-center justify-center bg-white/60 text-lg font-semibold"
+        >
+          جارٍ تبديل المتجر...
+        </div>
       )}
 
       <div className="ms-auto flex items-center gap-3 text-sm">

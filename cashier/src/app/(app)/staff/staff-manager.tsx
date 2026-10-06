@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Dialog } from "@/components/dialog";
+import { displayLogin } from "@/lib/login";
 import { ROLE_LABELS, type AppRole, type StaffMember, type Store } from "@/lib/types";
 import { buttonPrimary, buttonSecondary, cardClass, inputClass, tableClass } from "@/lib/ui";
 import { createStaff, setStaffActive, updateStaff } from "./actions";
@@ -99,7 +100,7 @@ export function StaffManager({
           <thead className="bg-gray-50 text-gray-600">
             <tr>
               <th className="text-start">الاسم</th>
-              <th className="text-start">البريد (للدخول)</th>
+              <th className="text-start">اسم الدخول</th>
               <th className="text-start">الصلاحية</th>
               <th className="text-start">المتاجر</th>
               <th className="text-start">الحالة</th>
@@ -112,7 +113,7 @@ export function StaffManager({
               return (
                 <tr key={m.user_id} className={m.is_active ? "" : "text-gray-400"}>
                   <td className="font-medium">{m.full_name}</td>
-                  <td dir="ltr" className="text-end">{m.email}</td>
+                  <td dir="ltr" className="text-end">{displayLogin(m.email)}</td>
                   <td>{ROLE_LABELS[m.role]}</td>
                   <td>{m.role === "owner" ? "كل المتاجر" : m.store_ids.map(storeName).join("، ")}</td>
                   <td>{m.is_active ? "فعّال" : "موقوف"}</td>
@@ -164,12 +165,12 @@ export function StaffManager({
             </label>
             {draft.userId ? (
               <p className="text-sm text-gray-600">
-                البريد: <span dir="ltr">{draft.email}</span>
+                اسم الدخول: <span dir="ltr">{displayLogin(draft.email)}</span>
               </p>
             ) : (
               <label className="block">
-                <span className="mb-1 block text-sm font-medium">البريد الإلكتروني (للدخول)</span>
-                <input required type="email" dir="ltr" autoComplete="off" value={draft.email} onChange={(e) => set({ email: e.target.value })} className={inputClass} />
+                <span className="mb-1 block text-sm font-medium">اسم المستخدم أو البريد (للدخول)</span>
+                <input required dir="ltr" autoCapitalize="none" placeholder="ali أو ali@example.com" autoComplete="off" value={draft.email} onChange={(e) => set({ email: e.target.value })} className={inputClass} />
               </label>
             )}
             <label className="block">

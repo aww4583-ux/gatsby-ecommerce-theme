@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage } from "@/lib/format";
+import { STAFF_DOMAIN, toLoginEmail } from "@/lib/login";
 
 export function LoginForm() {
   const router = useRouter();
@@ -20,16 +21,22 @@ export function LoginForm() {
     setError(null);
     setNotice(null);
     const supabase = createClient();
+    const loginEmail = toLoginEmail(email);
+    if (!loginEmail || (mode === "signup" && (!email.includes("@") || loginEmail.endsWith(STAFF_DOMAIN)))) {
+      setError(mode === "signup" ? "أدخل بريداً إلكترونياً صحيحاً" : "أدخل بريداً أو اسم مستخدم صحيحاً");
+      setBusy(false);
+      return;
+    }
 
     if (mode === "signin") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
       if (error) {
         setError(errorMessage(error));
         setBusy(false);
         return;
       }
     } else {
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({ email: loginEmail, password });
       if (error) {
         setError(errorMessage(error));
         setBusy(false);
@@ -53,12 +60,15 @@ export function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <label className="block">
-        <span className="mb-1 block text-sm font-medium">البريد الإلكتروني</span>
+        <span className="mb-1 block text-sm font-medium">
+          {mode === "signin" ? "البريد أو اسم المستخدم" : "البريد الإلكتروني"}
+        </span>
         <input
-          type="email"
+          type={mode === "signin" ? "text" : "email"}
+          autoCapitalize="none"
           dir="ltr"
           required
-          autoComplete="email"
+          autoComplete="username"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={inputClass}

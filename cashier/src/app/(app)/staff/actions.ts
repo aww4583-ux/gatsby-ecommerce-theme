@@ -3,6 +3,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { errorMessage } from "@/lib/format";
+import { toLoginEmail } from "@/lib/login";
 import type { AppRole, StaffMember } from "@/lib/types";
 
 type Result = { error: string | null };
@@ -41,19 +42,23 @@ export async function createStaff(
   if (invalid) return { error: invalid };
   if (typeof input.email !== "string" || typeof input.password !== "string") return { error: "بيانات غير صالحة" };
   if (input.password.length < 8) return { error: "كلمة المرور يجب أن تكون 8 أحرف على الأقل" };
+  const email = toLoginEmail(input.email);
+  if (!email) {
+    return { error: "اسم المستخدم: 3 أحرف إنجليزية أو أرقام على الأقل (بدون مسافات)، أو بريد إلكتروني صحيح" };
+  }
 
   const { supabase, error: authError } = await ownerStaff();
   if (authError) return { error: errorMessage(authError) };
 
   const admin = createAdminClient();
   const { data: created, error: createError } = await admin.auth.admin.createUser({
-    email: input.email.trim().toLowerCase(),
+    email,
     password: input.password,
     email_confirm: true,
   });
   if (createError || !created.user) {
     if (createError?.code === "email_exists" || /already/i.test(createError?.message ?? "")) {
-      return { error: "هذا البريد مسجّل مسبقاً" };
+      return { error: "اسم المستخدم أو البريد مسجّل مسبقاً" };
     }
     return { error: errorMessage(createError) };
   }

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { DateRange } from "@/components/date-range";
 import { Dialog } from "@/components/dialog";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage, formatMoney, parseAmount } from "@/lib/format";
@@ -97,12 +98,6 @@ export function ExpensesManager({
     router.refresh();
   }
 
-  function applyRange(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const f = new FormData(e.currentTarget);
-    router.push(`/expenses?from=${f.get("from")}&to=${f.get("to")}`);
-  }
-
   const set = (patch: Partial<Draft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
 
   return (
@@ -123,19 +118,7 @@ export function ExpensesManager({
         </button>
       </div>
 
-      <form onSubmit={applyRange} className="flex flex-wrap items-end gap-2">
-        <label>
-          <span className="mb-1 block text-sm">من</span>
-          <input type="date" name="from" defaultValue={from} className={inputClass} />
-        </label>
-        <label>
-          <span className="mb-1 block text-sm">إلى</span>
-          <input type="date" name="to" defaultValue={to} className={inputClass} />
-        </label>
-        <button type="submit" className={buttonSecondary}>
-          عرض
-        </button>
-      </form>
+      <DateRange from={from} to={to} today={today} />
 
       <div className="grid gap-4 md:grid-cols-[1fr_280px]">
         <div className={`${cardClass} overflow-x-auto p-0`}>

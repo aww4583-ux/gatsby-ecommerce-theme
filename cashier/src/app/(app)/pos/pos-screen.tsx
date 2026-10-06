@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage, formatMoney, formatNumber, parseAmount } from "@/lib/format";
 import type { PaymentMethod, Product, Receipt, Store } from "@/lib/types";
-import { ReceiptView } from "./receipt";
+import { ReceiptDialog } from "@/components/receipt-dialog";
 
 const PRODUCT_COLUMNS =
   "id, store_id, name, barcode, category, sale_price, stock, low_stock_threshold, is_active";
@@ -407,58 +406,9 @@ export function PosScreen({ store }: { store: Store }) {
         </button>
       </section>
 
-      {receipt && <ReceiptDialog receipt={receipt} onClose={closeReceipt} />}
-    </main>
-  );
-}
-
-function ReceiptDialog({ receipt, onClose }: { receipt: Receipt; onClose: () => void }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={`فاتورة رقم ${receipt.invoice_no}`}
-      className="fixed inset-0 z-20 flex items-center justify-center bg-black/40 p-4"
-    >
-      <div className="max-h-full w-full max-w-sm overflow-y-auto rounded-2xl bg-white p-4 shadow-xl">
-        <p className="mb-3 text-center font-semibold text-emerald-700">
-          تم البيع بنجاح ✓
-        </p>
-        <div className="rounded-lg border border-dashed border-gray-300 p-3">
-          <ReceiptView receipt={receipt} />
-        </div>
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="rounded-lg bg-gray-900 py-2.5 font-semibold text-white"
-          >
-            طباعة
-          </button>
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            className="rounded-lg bg-emerald-600 py-2.5 font-semibold text-white"
-          >
-            بيع جديد
-          </button>
-        </div>
-      </div>
-      {createPortal(
-        <div className="print-root">
-          <ReceiptView receipt={receipt} />
-        </div>,
-        document.body,
+      {receipt && (
+        <ReceiptDialog receipt={receipt} onClose={closeReceipt} heading="تم البيع بنجاح ✓" closeLabel="بيع جديد" />
       )}
-    </div>
+    </main>
   );
 }

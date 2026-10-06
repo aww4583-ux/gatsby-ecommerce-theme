@@ -6,6 +6,7 @@ import { Dialog } from "@/components/dialog";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage, formatMoney, formatNumber, parseAmount } from "@/lib/format";
 import type { ProductWithCost, Store } from "@/lib/types";
+import { StockHistory } from "./stock-history";
 import { buttonPrimary, buttonSecondary, cardClass, inputClass, tableClass } from "@/lib/ui";
 
 type Draft = {
@@ -51,6 +52,7 @@ export function ProductsManager({ store, products }: { store: Store; products: P
   const [query, setQuery] = useState("");
   const [onlyLow, setOnlyLow] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [history, setHistory] = useState<ProductWithCost | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -175,7 +177,7 @@ export function ProductsManager({ store, products }: { store: Store; products: P
                     {formatNumber(p.stock)}
                     {low && p.is_active && " ⚠"}
                   </td>
-                  <td className="text-end">
+                  <td className="whitespace-nowrap text-end">
                     <button
                       type="button"
                       onClick={() => {
@@ -186,6 +188,13 @@ export function ProductsManager({ store, products }: { store: Store; products: P
                     >
                       تعديل
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setHistory(p)}
+                      className="rounded-lg px-2 py-1 text-gray-600 hover:bg-gray-100"
+                    >
+                      الحركة
+                    </button>
                   </td>
                 </tr>
               );
@@ -193,6 +202,10 @@ export function ProductsManager({ store, products }: { store: Store; products: P
           </tbody>
         </table>
       </div>
+
+      {history && (
+        <StockHistory productId={history.id} productName={history.name} onClose={() => setHistory(null)} />
+      )}
 
       {draft && (
         <Dialog title={draft.id ? "تعديل منتج" : "منتج جديد"} onClose={() => setDraft(null)}>
@@ -240,7 +253,7 @@ export function ProductsManager({ store, products }: { store: Store; products: P
             </label>
             {draft.id && (
               <p className="col-span-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
-                تعديل المخزون هنا يغيّر الرصيد مباشرة. المبيعات والمرتجعات تعدّله تلقائياً.
+                تعديل المخزون هنا يُسجَّل في «الحركة» باسمك كتعديل يدوي. المبيعات والمرتجعات تعدّله تلقائياً.
               </p>
             )}
             {error && <p role="alert" className="col-span-2 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}

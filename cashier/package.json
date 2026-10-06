@@ -7,14 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:db": "scripts/test-db.sh"
+    "test:db": "scripts/test-db.sh",
+    "test:e2e": "e2e/run-all.sh"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12",
+    "@supabase/supabase-js": "^2",
     "next": "16.3.8",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "@supabase/supabase-js": "^2",
-    "@supabase/ssr": "^0.12"
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -23,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
+    "playwright": "^1.63.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

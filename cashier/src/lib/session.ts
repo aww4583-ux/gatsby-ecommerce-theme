@@ -73,3 +73,14 @@ export function baghdadToday(): { today: string; monthStart: string } {
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Baghdad" }).format(new Date());
   return { today, monthStart: today.slice(0, 8) + "01" };
 }
+
+const isDate = (v: unknown): v is string => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
+
+// ?from=&to= search params, defaulting to this month so far.
+export function parseRange(params: Record<string, string | string[] | undefined>) {
+  const { today, monthStart } = baghdadToday();
+  let from = isDate(params.from) ? params.from : monthStart;
+  let to = isDate(params.to) ? params.to : today;
+  if (from > to) [from, to] = [to, from];
+  return { from, to, today };
+}

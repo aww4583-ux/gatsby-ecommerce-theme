@@ -2,8 +2,10 @@ export const CURRENCY = "د.ع";
 
 const numberFormat = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
+// The number is wrapped in a left-to-right isolate (U+2066 … U+2069) so in
+// RTL text a negative amount reads "-3,500 د.ع", not "3,500- د.ع".
 export function formatMoney(value: number): string {
-  return `${numberFormat.format(value)} ${CURRENCY}`;
+  return `\u2066${numberFormat.format(value)}\u2069 ${CURRENCY}`;
 }
 
 export function formatNumber(value: number): string {
