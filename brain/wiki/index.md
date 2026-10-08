@@ -17,6 +17,7 @@ _None yet. Map one with `/process-map <name>`._
 ## Decisions
 - [Agent kit setup](decisions/2026-10-08-agent-kit.md) — why the brain, hooks and AI employees are set up this way
 - [Research: Professor Glitch](decisions/research-pro-glitch.md) — methods adopted from @pro.glitch, candidates not yet built, TikTok content lessons
+- [@pro.glitch content list](decisions/pro-glitch-content-list.md) — all 106 scraped videos by topic, tools named, takeaway per caption
 
 ## Products
 _None yet. Drop supplier sheets or notes in `brain/raw/` and run `/brain ingest`._
