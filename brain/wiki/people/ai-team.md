@@ -8,6 +8,7 @@ Each employee is a subagent in `.claude/agents/`. Add new ones with `/hire-emplo
 | product-copywriter | Product and blog copy in `src/helpers/*.json` | On demand ("write the description for…") | Read, Grep, Glob, Edit | Never commits or deploys; returns "Ready for approval" |
 | code-reviewer | Reviews diffs before commit or PR | On demand, after code changes | Read, Grep, Glob, Bash (read-only) | Never edits |
 | launch-qa | Go/no-go before deploy or launch | On demand, before deploy | Read, Grep, Glob, Bash | Never deploys or fixes |
+| support-drafter | Drafts customer replies from policies, products and voice | On demand (paste messages) | Read, Grep, Glob, Write | Never sends; angry, refund, legal and unsure messages go to the owner with no draft |
 
 ## Guardrails every employee shares (hooks in `.claude/settings.json`)
 - `protect-secrets`: can't read or write `.env`, keys or credentials.

@@ -6,36 +6,48 @@ argument-hint: "<process name, e.g. 'new product launch' or 'customer returns'>"
 
 # Process map: decide where AI fits before you build anything
 
-Systems thinking comes before tools. Most failed AI projects automated the wrong step.
+A real AI project starts with a stopwatch and a wall of sticky notes, not a tool. Most failed AI projects automated the wrong step, or automated a broken one.
 
-## 1. Capture the process as it really runs
+## 1. Interview the person who does the work, not the owner
 
-Ask the user, or read the existing `brain/wiki/processes/<name>.md`, and write out each step as:
+The owner says taking an order is 5 steps. The person who has done it for years walks you through 41, including the sticky note on their monitor. Ask the user who actually does this, then get the real version, workarounds included. If `brain/wiki/processes/<name>.md` exists, start from it.
 
-| # | Step | Who does it now | Input | Output | Time/week | Frequency | Rules or judgment? |
-|---|------|-----------------|-------|--------|-----------|-----------|-------------------|
+## 2. Break it into atomic steps
 
-Push for the real version, including the workarounds, the waiting and the "then I email Sam".
+Each step is **one person, one system, one action**. "Enter the order" is 11 steps. AI can't do "enter the order", but it's great at "match their part number to ours", and it can say how sure it is.
 
-## 2. Classify each step
+| # | Atomic step | Who | System | Touch time | Frequency/week | Color |
+|---|-------------|-----|--------|-----------|----------------|-------|
 
-| Class | Meaning | Build with |
+## 3. Measure two clocks
+
+- **Touch time** is the minutes of actual work. These cost wages.
+- **Lead time** is the time from request to done, waiting included. This costs customers.
+
+## 4. Hunt the exceptions
+
+List what goes wrong: missing info, price mismatches, out of stock, duplicates, angry customers, refunds. If possible, log them for two weeks. **That's where the time goes.**
+
+## 5. Color every step
+
+| Color | Meaning | Build with |
 |---|---|---|
-| **Automate** | Same input, same rule, every time | Plain automation: script, n8n/Zapier, Netlify function, cron. No AI needed. |
-| **AI-assist** | Needs language or judgment, and a mistake is cheap and reversible | An AI employee that drafts, classifies or summarizes |
-| **AI + gate** | Needs judgment, and a mistake is costly or public (money, customers, publishing) | An AI employee that prepares while a human approves (the brake) |
-| **Human** | Relationships, taste, accountability, or too rare to be worth building | Leave it. Maybe give the human a better brief. |
+| 🔵 **Blue** | A rule: same input, same output | Plain automation (script, n8n/Zapier, Netlify function, cron). No AI. |
+| 🟣 **Purple** | Judgment on messy input | An AI employee does it. A person approves **when it's unsure** (it must report its confidence). |
+| 🟠 **Orange** | Money or a relationship | Stays human. Give the human a better brief. |
 
-Rule of thumb: don't use AI where an `if` statement works, and don't remove the human where an error costs more than the step saves.
+**Fix broken steps before you automate them.** Automating a bad process just makes it fail faster.
 
-## 3. Score and pick
+## 6. Score and sequence
 
-For every non-Human step: **hours saved per month × confidence it works ÷ build effort (1–5)**. Recommend the single top item as the first build. A 7-day win beats a 3-month platform.
+Score each non-orange step as **frequency × minutes × cost of a mistake**. That ordering is the roadmap. Recommend **one** first build, a 7-day win, where each phase pays for the next.
 
-## 4. Output
+Pick the one number to track from day one: **the share of cases nobody had to touch**.
 
-Write `brain/wiki/processes/<name>.md` with the step table, the classification, the scores and the recommendation. Add it to `index.md` and `log.md`. Then offer the next move, for example: "Want me to build #3 as an AI employee? (/hire-employee)".
+## 7. Output
 
-## Store-specific starting points (this repo is a Gatsby e-commerce theme)
+Write `brain/wiki/processes/<name>.md` with the step table, the exceptions list, the colors, the scores, the first build and the tracking number. Update `index.md` and `log.md`. Then offer to build the first item with `/hire-employee`.
 
-Good first candidates to map: product listing creation (`src/helpers/product.json`), blog/content publishing (`src/helpers/blog.json`), customer support replies, order and returns handling, SEO metadata, and launch QA.
+## Good first candidates in this store
+
+Product listing creation (`src/helpers/product.json`), blog publishing (`src/helpers/blog.json`), customer email replies (see the `support-drafter` employee), returns, and launch QA.
