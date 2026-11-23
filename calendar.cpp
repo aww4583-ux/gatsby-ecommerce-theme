@@ -63,7 +63,8 @@ void show(int y, int m) {
         if (i < 1) { printf("   "); continue; }
         bool today = y == now.tm_year + 1900 && m == now.tm_mon + 1 && i == now.tm_mday;
         const char* a = !color ? "" : today ? "\033[7m" : (w == 0 || w == 6) ? "\033[31m" : "";
-        printf("%s%2d%s%c%s", a, i, color ? "\033[0m" : "", ev[i] ? '+' : !color && today ? '*' : ' ', c == 6 ? "\n" : "");
+        char mk = ev[i] ? (!color && today ? '#' : '+') : !color && today ? '*' : ' ';  // no color: * today, + event, # both
+        printf("%s%2d%s%c%s", a, i, *a ? "\033[0m" : "", mk, c == 6 ? "\n" : "");
     }
     if ((n - 1 + col) % 7 != 6) printf("\n");
     for (auto& s : notes) printf("%s\n", s.c_str());
