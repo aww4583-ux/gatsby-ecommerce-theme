@@ -1,9 +1,14 @@
-// Usage: ./calendar [-m] [-n] [month year]   -m: week starts Monday, -n: no color
+// Usage: ./calendar [-m] [-n] [-e file] [month year]
+//   -m: week starts Monday, -n: no color, -e: events file (default events.txt)
+// Events file lines: "YYYY-MM-DD description"; marked with + in the grid and listed below.
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
 #include <cstring>
+#include <fstream>
+#include <string>
+#include <vector>
 #include <unistd.h>
 
 int dow(int y, int m, int d) {  // 0 = Sunday (Sakamoto's method)
@@ -26,15 +31,29 @@ int main(int argc, char** argv) {
     int m = t->tm_mon + 1, y = t->tm_year + 1900, start = 0;
     bool color = isatty(1);
     int pos[2], np = 0;
+    const char* evfile = "events.txt";
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-m")) start = 1;
         else if (!strcmp(argv[i], "-n")) color = false;
+        else if (!strcmp(argv[i], "-e") && i + 1 < argc) evfile = argv[++i];
         else if (np < 2) pos[np++] = atoi(argv[i]);
     }
     if (np == 2) { m = pos[0]; y = pos[1]; }
     if (np == 1 || m < 1 || m > 12 || y < 1) {
-        fprintf(stderr, "usage: %s [-m] [-n] [month 1-12 year]\n", argv[0]);
+        fprintf(stderr, "usage: %s [-m] [-n] [-e file] [month 1-12 year]\n", argv[0]);
         return 1;
+    }
+
+    // ponytail: events re-parsed per month, fine for a hand-edited file
+    bool ev[32] = {};
+    std::vector<std::string> lines;
+    std::ifstream in(evfile);
+    for (std::string l; std::getline(in, l);) {
+        int ey, em, ed, n = 0;
+        if (sscanf(l.c_str(), "%d-%d-%d %n", &ey, &em, &ed, &n) >= 3 && ey == y && em == m && ed >= 1 && ed <= dim(y, m)) {
+            ev[ed] = true;
+            lines.push_back(l);
+        }
     }
 
     static const char* names[] = {"January", "February", "March", "April", "May", "June", "July",
@@ -47,11 +66,13 @@ int main(int argc, char** argv) {
     for (int d = 1; d <= dim(y, m); d++) {
         int w = dow(y, m, d);
         bool today = d == t->tm_mday && m == t->tm_mon + 1 && y == t->tm_year + 1900;
-        if (!color) printf(today ? "%2d*" : "%2d ", d);  // * marks today
-        else if (today) printf("\033[7m%2d\033[0m ", d);  // reverse video
-        else if (w == 0 || w == 6) printf("\033[31m%2d\033[0m ", d);  // weekends red
-        else printf("%2d ", d);
+        char mk = ev[d] ? '+' : ' ';
+        if (!color) printf(today ? "%2d*" : "%2d%c", d, mk);  // * marks today (wins over +)
+        else if (today) printf("\033[7m%2d\033[0m%c", d, mk);  // reverse video
+        else if (w == 0 || w == 6) printf("\033[31m%2d\033[0m%c", d, mk);  // weekends red
+        else printf("%2d%c", d, mk);
         if ((w - start + 7) % 7 == 6) printf("\n");
     }
     printf("\n");
+    for (auto& l : lines) printf("%s\n", l.c_str());
 }
